@@ -11,7 +11,7 @@ VL53L0X sensor;
 
 // Testzeit zwischen Messungen
 int delayMs = 1000;
-int lastExecution = 0;
+int nextExecution = 0;
 
 void Sensorsetup() {
   // This is important - dunno why but it breaks if not present
@@ -31,10 +31,10 @@ void Sensorsetup() {
 }
 
 void Sensorloop() {
-  if (millis() - (lastExecution + delayMs) > 0) {
+  if (millis() < nextExecution) {
     return;
   }
-  lastExecution = millis();
+  nextExecution = millis() + delayMs;
 
   int distance = sensor.readRangeContinuousMillimeters();
 
