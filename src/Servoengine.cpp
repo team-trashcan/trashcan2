@@ -10,7 +10,7 @@
   Component: Servo motor(SG90) and Ultrasonic distance Sensor(HC-SR04)
 */
 
-#include <Servo.h>
+#include <ESP32Servo.h>
 #include <Arduino.h>
 
 #include "Servoengine.h"
@@ -23,8 +23,6 @@ long averDist[3];
 
 // Distance threshold in centimeters
 const int distanceThreshold = 20;
-
-#include <Servo.h>
 
 #define SERVO_PIN 26 // ESP32 pin GPIO26 connected to servo motor
 
