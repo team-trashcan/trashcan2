@@ -11,6 +11,7 @@ VL53L0X sensor;
 
 // Testzeit zwischen Messungen
 int delayMs = 1000;
+int nextExecution = 0;
 
 void Sensorsetup()
 {
@@ -32,18 +33,18 @@ void Sensorsetup()
   Serial.println("Sensor is ready!");
 }
 
-void Sensorloop()
-{
+void Sensorloop() {
+  if (millis() < nextExecution) {
+    return;
+  }
+  nextExecution = millis() + delayMs;
+
   int distance = sensor.readRangeContinuousMillimeters();
 
   if (sensor.timeoutOccurred() || distance > 1300)
   {
     Serial.println(1300);
-    delay(delayMs);
     return;
   }
-  Serial.print("Lasersensor: ");
-  Serial.println(distance);
-
-  delay(delayMs);
+    Serial.println(distance);
 }
