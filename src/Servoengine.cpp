@@ -16,8 +16,8 @@
 #include "Servoengine.h"
 
 // Set up the ultrasonic sensor parameters
-const int trigPin = 5;
-const int echoPin = 6;
+const int trigPin = 32;
+const int echoPin = 33;
 long distance, averageDistance;
 long averDist[3];
 
