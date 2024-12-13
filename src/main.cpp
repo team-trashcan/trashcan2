@@ -8,7 +8,7 @@
 
 // Eigene Bibliotheken
 #include "Servoengine.h"
-#include "Sensor.h"
+// #include "Sensor.h"
 
 const char *ssid = "REPLACE_WITH_YOUR_SSID";
 const char *password = "REPLACE_WITH_YOUR_PASSWORD";
@@ -47,7 +47,7 @@ void setup()
 
   // Aufrufen des Servosetups
   Servosetup();
-  Sensorsetup();
+  // Sensorsetup();
 }
 
 // #######################################################################################################
@@ -96,7 +96,7 @@ void loop()
   //   }
   //   lastTime = millis();
 
-  // Aufrufen des Servoloops und des Sensorlooops
+  // Aufrufen des Sensorlooops
   Servoloop();
-  Sensorloop();
+  // Sensorloop();
 }

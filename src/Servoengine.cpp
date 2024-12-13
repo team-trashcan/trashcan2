@@ -15,6 +15,9 @@
 
 #include "Servoengine.h"
 
+// da der Sensor nur aufgerufen werden soll, wenn auch Müll hinzugefügt wurde wird dieser hier die Libary implementiert
+#include "Sensor.h"
+
 // Set up the ultrasonic sensor parameters
 const int trigPin = 32;
 const int echoPin = 33;
@@ -24,7 +27,14 @@ long averDist[3];
 // Distance threshold in centimeters
 const int distanceThreshold = 20;
 
+int nextExecution = 0;
+int i = 0;
+
 #define SERVO_PIN 26 // ESP32 pin GPIO26 connected to servo motor
+
+// Degrees for close and open Angle
+const int openAngle = 135;
+const int closeAngle = 0;
 
 Servo servoMotor;
 
@@ -35,9 +45,15 @@ void Servosetup()
   pinMode(echoPin, INPUT);
 
   servoMotor.attach(SERVO_PIN); // attaches the servo on ESP32 pin
-  // servoMotor.write(closeAngle);
-  // delay(100);
-  // servo.detach();  // Detach the servo to save power when not in use
+  servoMotor.write(closeAngle);
+  if (millis() < nextExecution)
+  {
+    return;
+  }
+  nextExecution = millis() + 10;
+  servoMotor.detach(); // Detach the servo to save power when not in use
+
+  Sensorsetup();
 }
 
 // Function to read the sensor data and calculate the distance
@@ -58,12 +74,19 @@ float readDistance()
 void Servoloop()
 {
   // Measure the distance three times
-  for (int i = 0; i <= 2; i++)
+  // for (int i = 0; i <= 2; i++)
+  if (millis() >= nextExecution && i <= 2)
   {
+    nextExecution = millis() + 10;
     distance = readDistance();
     averDist[i] = distance;
-    delay(10);
+    i++;
   }
+  else if (i != 3)
+  {
+    return;
+  }
+  i = 0;
 
   // Calculate the average distance
   averageDistance = (averDist[0] + averDist[1] + averDist[2]) / 3;
@@ -72,31 +95,33 @@ void Servoloop()
   // Control the servo based on the averaged distance
   if (averageDistance <= distanceThreshold)
   {
-    // rotates from 0 degrees to 180 degrees
-    for (int pos = 0; pos <= 180; pos += 1)
+    // open Angle
+    servoMotor.write(openAngle);
+    if (millis() < nextExecution)
     {
-      // in steps of 1 degree
-      servoMotor.write(pos);
-      delay(15); // waits 15ms to reach the position
-    } // Reattach the servo before sending a command
-    delay(1);
-    // rotates from 180 degrees to 0 degrees
-    for (int pos = 180; pos >= 0; pos -= 1)
-    {
-      servoMotor.write(pos);
-      delay(15); // waits 15ms to reach the position // Rotate the servo to the open position
-      delay(2000);
+      return;
     }
+    nextExecution = millis() + 1000;
+    // close Angle after 1000 ms
+    servoMotor.write(closeAngle);
+    if (millis() < nextExecution)
+    {
+      return;
+    }
+    nextExecution = millis() + 200;
+
+    Sensorloop();
   }
+
   else
   {
-    // rotates from 180 degrees to 0 degrees
-    for (int pos = 180; pos >= 0; pos -= 1)
+    // close Angle
+    servoMotor.write(closeAngle);
+    if (millis() < nextExecution)
     {
-      servoMotor.write(pos);
-      delay(15); // waits 15ms to reach the position  // Rotate the servo back to the closed position
-      delay(500);
-      servoMotor.detach(); // Detach the servo to save power when not in use
+      return;
     }
+    nextExecution = millis() + 15;
+    servoMotor.detach(); // Detach the servo to save power when not in use
   }
 }
