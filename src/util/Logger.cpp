@@ -59,7 +59,7 @@ void Logger::print_helper(T arg, Args... args)
   log_helper(args...);
 }
 
-template void Logger::print<>(const String &, const char *);
+template void Logger::print<>(const String &, const String &const char *);
 template void Logger::debug<>(const char *);
 template void Logger::info<>(const char *);
 template void Logger::warn<>(const char *);
