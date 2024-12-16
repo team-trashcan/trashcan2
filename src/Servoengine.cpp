@@ -2,41 +2,23 @@
 #include <Arduino.h>
 #include "Servoengine.h"
 #include "Sensor.h"
+#include "Config.h"
 
-// Set up the ultrasonic sensor parameters
-const int trigPin = 32;
-const int echoPin = 33;
-long distance, averageDistance;
-long averDist[3];
-
-// Distance threshold in centimeters
-const int distanceThreshold = 20;
-
+long distance, averageDistance, distanceArray[3];
 int nextExecution = 0;
 int i = 0;
-
-#define SERVO_PIN 26 // ESP32 pin GPIO26 connected to servo motor
-
-// Degrees for close and open Angle
-const int openAngle = 135;
-const int closeAngle = 0;
+bool lidOpen = false;
 
 Servo servoMotor;
 
 void Servosetup()
 {
-  // Configure the trigger and echo pins of the ultrasonic sensor
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+  pinMode(TRIGGER_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
 
-  servoMotor.attach(SERVO_PIN); // attaches the servo on ESP32 pin
-  servoMotor.write(closeAngle);
-  if (millis() < nextExecution)
-  {
-    return;
-  }
-  nextExecution = millis() + 10;
-  servoMotor.detach(); // Detach the servo to save power when not in use
+  servoMotor.attach(SERVO_PIN);
+  servoMotor.write(CLOSE_ANGLE);
+  servoMotor.detach(); // Save power when not in use
 
   Sensorsetup();
 }
@@ -45,26 +27,23 @@ void Servosetup()
 float readDistance()
 {
   // Send a pulse on the trigger pin of the ultrasonic sensor
-  digitalWrite(trigPin, LOW);
+  digitalWrite(TRIGGER_PIN, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(TRIGGER_PIN, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  digitalWrite(TRIGGER_PIN, LOW);
 
-  // Measure the pulse width of the echo pin and calculate the distance value
-  float distance = pulseIn(echoPin, HIGH) / 58.00; // Formula: (340m/s * 1us) / 2
-  return distance;
+  return pulseIn(ECHO_PIN, HIGH) / 58.00; // Formula: (340m/s * 1us) / 2
 }
 
 void Servoloop()
 {
   // Measure the distance three times
-  // for (int i = 0; i <= 2; i++)
   if (millis() >= nextExecution && i <= 2)
   {
     nextExecution = millis() + 10;
     distance = readDistance();
-    averDist[i] = distance;
+    distanceArray[i] = distance;
     i++;
   }
   else if (i != 3)
@@ -74,39 +53,34 @@ void Servoloop()
   i = 0;
 
   // Calculate the average distance
-  averageDistance = (averDist[0] + averDist[1] + averDist[2]) / 3;
+  averageDistance = (distanceArray[0] + distanceArray[1] + distanceArray[2]) / 3;
+  Serial.print("[Servoengine.cpp] Average distance: ");
   Serial.println(averageDistance);
 
   // Control the servo based on the averaged distance
-  if (averageDistance <= distanceThreshold)
+  if (averageDistance <= DISTANCE_THRESHOLD)
   {
-    // open Angle
-    servoMotor.write(openAngle);
-    if (millis() < nextExecution)
+    // Object is close enough, open lid if closed
+    if (!lidOpen)
     {
-      return;
-    }
-    nextExecution = millis() + 1000;
-    // close Angle after 1000 ms
-    servoMotor.write(closeAngle);
-    if (millis() < nextExecution)
-    {
-      return;
-    }
-    nextExecution = millis() + 200;
+      servoMotor.attach(SERVO_PIN);
+      servoMotor.write(OPEN_ANGLE);
 
-    Sensorloop();
+      lidOpen = true;
+      nextExecution += LID_HOLD_OPEN_DELAY; // Delay next execution so the lid stays open for some time
+    }
   }
-
   else
   {
-    // close Angle
-    servoMotor.write(closeAngle);
-    if (millis() < nextExecution)
+    // Object is far away, close lid if open
+    if (lidOpen)
     {
-      return;
+      servoMotor.attach(SERVO_PIN);
+      servoMotor.write(CLOSE_ANGLE);
+
+      lidOpen = false;
     }
-    nextExecution = millis() + 15;
-    servoMotor.detach(); // Detach the servo to save power when not in use
   }
+
+  servoMotor.detach(); // Detach the servo to save power when not in use
 }

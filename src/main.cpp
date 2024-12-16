@@ -1,17 +1,11 @@
-
-// Bibliotheken von außen
 #include <Arduino.h>
-
-// Bibliotheken für Http
 #include <WiFi.h>
 #include <HTTPClient.h>
-
-// Eigene Bibliotheken
 #include "Servoengine.h"
 // #include "Sensor.h"
 
-const char *ssid = "REPLACE_WITH_YOUR_SSID";
-const char *password = "REPLACE_WITH_YOUR_PASSWORD";
+const char *ssid = SSID_NAME;
+const char *password = SSID_PASSWORD;
 
 // Your Domain name with URL path or IP address with path
 const char *serverName = "http://192.168.1.106:1880/update-sensor";

@@ -14,3 +14,21 @@ closed position of 0 degrees after a one-second delay.
 - Servo motor (SG90)
 - Ultrasonic distance sensor (HC-SR04)
 - Laser distance sensor (ToF VL53L0X)
+
+## Development
+
+### Settings
+
+All settings are located in the `Config.h` file.
+
+### Secrets
+
+Add an `env.ini` file in the root folder, containing all secret variables (e.g. the WLAN SSID and password).\
+They are then managed by PlatformIO.
+
+```ini
+[env]
+build_flags = 
+    -DSSID_NAME=\"xxx\"
+    -DSSID_PASSWORD=\"xxx\"
+```
