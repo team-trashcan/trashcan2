@@ -39,6 +39,9 @@ void Logger::print(const String &severity, Args... args)
   Serial.print("[");
   Serial.print(severity);
   Serial.print("] ");
+  Serial.print("[");
+  Serial.print(__FUNCTION__);
+  Serial.print("] ");
   log_helper(args...);
 }
 
