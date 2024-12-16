@@ -11,36 +11,36 @@ void Logger::debug(Args... args)
 {
   if (DEBUG_LOGGING_ENABLED)
   {
-    print("DEBUG", args...);
+    print("DEBUG", __FUNCTION__, args...);
   }
 }
 
 template <typename... Args>
 void Logger::info(Args... args)
 {
-  print("INFO", args...);
+  print("INFO", __FUNCTION__, args...);
 }
 
 template <typename... Args>
 void Logger::warn(Args... args)
 {
-  print("WARN", args...);
+  print("WARN", __FUNCTION__, args...);
 }
 
 template <typename... Args>
 void Logger::error(Args... args)
 {
-  print("ERROR", args...);
+  print("ERROR", __FUNCTION__, args...);
 }
 
 template <typename... Args>
-void Logger::print(const String &severity, Args... args)
+void Logger::print(const String &severity, const String &function, Args... args)
 {
   Serial.print("[");
   Serial.print(severity);
   Serial.print("] ");
   Serial.print("[");
-  Serial.print(__FUNCTION__);
+  Serial.print(function);
   Serial.print("] ");
   log_helper(args...);
 }

@@ -22,7 +22,7 @@ public:
 
 private:
   template <typename... Args>
-  void print(const String &severity, Args... args);
+  void print(const String &severity, const String &function, Args... args);
 
   template <typename T>
   void print_helper(T arg);
