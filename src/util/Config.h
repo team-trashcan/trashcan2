@@ -5,7 +5,9 @@
 // These get replaced by the preprocessor (before being uploaded) so there's no extra memory usage,
 // but their values can't be changed afterwards
 
-#define RESTART_ON_FAIL true // Set to false to disable restart on critical error - the program will shutdown instead
+#define BAUD_RATE 9600
+#define RESTART_ON_FAIL true       // Set to false to disable restart on critical error - the program will shutdown instead
+#define DEBUG_LOGGING_ENABLED true // Set to true to enable debug logging
 
 #define TRIGGER_PIN 32
 #define ECHO_PIN 33

@@ -2,7 +2,8 @@
 #include <Arduino.h>
 #include "Servoengine.h"
 #include "Sensor.h"
-#include "Config.h"
+#include "util/Config.h"
+#include "util/Logger.h"
 
 long distance, averageDistance, distanceArray[3];
 int nextExecution = 0;
@@ -10,6 +11,7 @@ int i = 0;
 bool lidOpen = false;
 
 Servo servoMotor;
+extern Logger logger;
 
 void Servosetup()
 {
@@ -19,8 +21,6 @@ void Servosetup()
   servoMotor.attach(SERVO_PIN);
   servoMotor.write(CLOSE_ANGLE);
   servoMotor.detach(); // Save power when not in use
-
-  Sensorsetup();
 }
 
 // Function to read the sensor data and calculate the distance
@@ -54,8 +54,7 @@ void Servoloop()
 
   // Calculate the average distance
   averageDistance = (distanceArray[0] + distanceArray[1] + distanceArray[2]) / 3;
-  Serial.print("[Servoengine.cpp] Average distance: ");
-  Serial.println(averageDistance);
+  logger.debug("Average distance: ", averageDistance);
 
   // Control the servo based on the averaged distance
   if (averageDistance <= DISTANCE_THRESHOLD)
