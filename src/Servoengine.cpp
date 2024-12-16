@@ -1,21 +1,6 @@
-/*
-  This is an Arduino code for a smart trash can that automatically opens its lid when an object comes within 20cm of it.
-
-  This Arduino code controls an SG90 servo motor based on readings from an ultrasonic distance sensor.
-  The distance is measured three times, and the average is computed. If the averaged distance is less
-  than or equal to 20, the servo rotates to an open angle of 180 degrees; otherwise, it returns to a
-  closed position of 0 degrees after a one-second delay.
-
-  Board: Arduino Uno R4 (or R3)
-  Component: Servo motor(SG90) and Ultrasonic distance Sensor(HC-SR04)
-*/
-
 #include <ESP32Servo.h>
 #include <Arduino.h>
-
 #include "Servoengine.h"
-
-// da der Sensor nur aufgerufen werden soll, wenn auch Müll hinzugefügt wurde wird dieser hier die Libary implementiert
 #include "Sensor.h"
 
 // Set up the ultrasonic sensor parameters
