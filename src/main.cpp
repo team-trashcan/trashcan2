@@ -4,7 +4,7 @@
 #include "Servoengine.h"
 #include "Sensor.h"
 #include "util/Config.h"
-#include "util/Logger.h"
+// #include "util/Logger.h"
 
 // const char *ssid = SSID_NAME;
 // const char *password = SSID_PASSWORD;
@@ -24,12 +24,15 @@
 // ################################################## Setup ###################################################
 // ############################################################################################################
 
-Logger logger;
+// Logger logger;
 
 void setup()
 {
-  logger.setup(BAUD_RATE);
-  logger.debug("Debug logging is enabled.");
+  // logger.setup(BAUD_RATE);
+  // logger.debug("Debug logging is enabled.");
+
+  Serial.begin(BAUD_RATE);
+  Serial.println("test");
 
   Servosetup();
   Sensorsetup();
@@ -95,5 +98,5 @@ void loop()
 
   // Aufrufen des Sensorlooops
   Servoloop();
-  // Sensorloop();
+  Sensorloop();
 }

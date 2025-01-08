@@ -3,12 +3,12 @@
 #include <Arduino.h>
 #include "Sensor.h"
 #include "util/Config.h"
-#include "util/Logger.h"
+// #include "util/Logger.h"
 
 VL53L0X sensor;
-extern Logger logger;
+// extern Logger logger;
 
-int nextExecution = 0;
+unsigned long nextExecutionSensor = 0;
 
 void Sensorsetup()
 {
@@ -16,7 +16,7 @@ void Sensorsetup()
 
   if (!sensor.init())
   {
-    logger.error("Failed to initialize VL53L0X!");
+    // logger.error("Failed to initialize VL53L0X!");
     if (RESTART_ON_FAIL)
     {
       ESP.restart();
@@ -29,26 +29,26 @@ void Sensorsetup()
 
   sensor.startContinuous(); // Sensor reads continuously in the background
 
-  logger.info("VL53L0X sensor is ready!");
+  // logger.info("VL53L0X sensor is ready!");
 }
 
 void Sensorloop()
 {
-  if (millis() < nextExecution)
+  if (millis() < nextExecutionSensor)
   {
     return;
   }
-  nextExecution = millis() + SENSOR_MEASUREMENT_DELAY;
+  nextExecutionSensor = millis() + SENSOR_MEASUREMENT_DELAY;
 
   int distance = sensor.readRangeContinuousMillimeters(); // Get the most recent reading
 
   if (sensor.timeoutOccurred() || distance > 1300)
   {
-    logger.debug("Distance: ", 1300);
+    // logger.debug("Distance: ", 1300);
   }
   else
   {
-    logger.debug("Distance: ", distance);
+    // logger.debug("Distance: ", distance);
   }
 
   // TODO: Do something with measured distance - send to frontend etc.

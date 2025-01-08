@@ -3,15 +3,15 @@
 #include "Servoengine.h"
 #include "Sensor.h"
 #include "util/Config.h"
-#include "util/Logger.h"
+// #include "util/Logger.h"
 
 long distance, averageDistance, distanceArray[3];
-int nextExecution = 0;
+int nextExecutionServo = 0;
 int i = 0;
 bool lidOpen = false;
 
 Servo servoMotor;
-extern Logger logger;
+// extern Logger logger;
 
 void Servosetup()
 {
@@ -39,34 +39,46 @@ float readDistance()
 void Servoloop()
 {
   // Measure the distance three times
-  if (millis() >= nextExecution && i <= 2)
+  // if (millis() >= nextExecutionServo && i <= 2)
+  if (millis() >= nextExecutionServo)
   {
-    nextExecution = millis() + 10;
+    Serial.println("---servo check---");
+    // Serial.print("i");
+    // Serial.println(i);
+
+    nextExecutionServo = millis() + 1000;
     distance = readDistance();
-    distanceArray[i] = distance;
-    i++;
+    Serial.print("distance: ");
+    Serial.println(distance);
+    // distanceArray[i] = distance;
+    // i++;
+    // return;
   }
-  else if (i != 3)
+  else
   {
     return;
   }
-  i = 0;
+  // i = 0;
 
   // Calculate the average distance
-  averageDistance = (distanceArray[0] + distanceArray[1] + distanceArray[2]) / 3;
-  logger.debug("Average distance: ", averageDistance);
+  // averageDistance = (distanceArray[0] + distanceArray[1] + distanceArray[2]) / 3;
+  // logger.debug("Average distance: ", averageDistance);
+  // Serial.print("avg dst: ");
+  // Serial.print(averageDistance);
 
   // Control the servo based on the averaged distance
-  if (averageDistance <= DISTANCE_THRESHOLD)
+  if (distance <= DISTANCE_THRESHOLD)
   {
     // Object is close enough, open lid if closed
     if (!lidOpen)
     {
+      Serial.println("open lid");
       servoMotor.attach(SERVO_PIN);
       servoMotor.write(OPEN_ANGLE);
+      servoMotor.detach(); // Detach the servo to save power when not in use
 
       lidOpen = true;
-      nextExecution += LID_HOLD_OPEN_DELAY; // Delay next execution so the lid stays open for some time
+      nextExecutionServo += LID_HOLD_OPEN_DELAY; // Delay next execution so the lid stays open for some time
     }
   }
   else
@@ -74,12 +86,12 @@ void Servoloop()
     // Object is far away, close lid if open
     if (lidOpen)
     {
+      Serial.println("close lid");
       servoMotor.attach(SERVO_PIN);
       servoMotor.write(CLOSE_ANGLE);
+      servoMotor.detach(); // Detach the servo to save power when not in use
 
       lidOpen = false;
     }
   }
-
-  servoMotor.detach(); // Detach the servo to save power when not in use
 }

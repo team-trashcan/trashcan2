@@ -1,7 +1,7 @@
-#ifndef SENSOR.H
-#define SENSOR.H
+#ifndef SENSOR_H
+#define SENSOR_H
 
-// Functions that are available for the main 
+// Functions that are available for the main
 void Sensorsetup();
 void Sensorloop();
 
