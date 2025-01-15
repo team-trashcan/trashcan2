@@ -20,7 +20,7 @@ void Servosetup()
 
   servoMotor.attach(SERVO_PIN);
   servoMotor.write(CLOSE_ANGLE);
-  servoMotor.detach(); // Save power when not in use
+  // servoMotor.detach();
 }
 
 // Function to read the sensor data and calculate the distance
@@ -38,33 +38,20 @@ float readDistance()
 
 void Servoloop()
 {
-  // Measure the distance three times
-  // if (millis() >= nextExecutionServo && i <= 2)
   if (millis() >= nextExecutionServo)
   {
+    // read measure
     Serial.println("---servo check---");
-    // Serial.print("i");
-    // Serial.println(i);
 
     nextExecutionServo = millis() + 1000;
     distance = readDistance();
     Serial.print("distance: ");
     Serial.println(distance);
-    // distanceArray[i] = distance;
-    // i++;
-    // return;
   }
   else
   {
     return;
   }
-  // i = 0;
-
-  // Calculate the average distance
-  // averageDistance = (distanceArray[0] + distanceArray[1] + distanceArray[2]) / 3;
-  // logger.debug("Average distance: ", averageDistance);
-  // Serial.print("avg dst: ");
-  // Serial.print(averageDistance);
 
   // Control the servo based on the averaged distance
   if (distance <= DISTANCE_THRESHOLD)
@@ -73,9 +60,9 @@ void Servoloop()
     if (!lidOpen)
     {
       Serial.println("open lid");
-      servoMotor.attach(SERVO_PIN);
+      // servoMotor.attach(SERVO_PIN);
       servoMotor.write(OPEN_ANGLE);
-      servoMotor.detach(); // Detach the servo to save power when not in use
+      // servoMotor.detach(); // Detach the servo to save power when not in use
 
       lidOpen = true;
       nextExecutionServo += LID_HOLD_OPEN_DELAY; // Delay next execution so the lid stays open for some time
@@ -87,9 +74,9 @@ void Servoloop()
     if (lidOpen)
     {
       Serial.println("close lid");
-      servoMotor.attach(SERVO_PIN);
+      // servoMotor.attach(SERVO_PIN);
       servoMotor.write(CLOSE_ANGLE);
-      servoMotor.detach(); // Detach the servo to save power when not in use
+      // servoMotor.detach(); // Detach the servo to save power when not in use
 
       lidOpen = false;
     }
