@@ -12,23 +12,9 @@ VL53L0X sensor;
 int distanceInTrashCan;
 // extern Logger logger;
 
-const char *ssid = SSID_NAME;
-const char *password = SSID_PASSWORD;
-
-// Your Domain name with URL path or IP address with path
-const char *serverName = "http://192.168.1.106:1880/update-sensor";
-
-// the following variables are unsigned longs because the time, measured in
-// milliseconds, will quickly become a bigger number than can be stored in an int.
-unsigned long lastTime = 0;
-// Timer set to 10 minutes (600000)
-unsigned long timerDelay = 600000;
-// Set timer to 5 seconds (5000)
-unsigned long timerDelay = 5000;
-
-// hier den HTTP Client einbauen, da nur diese werte gesendet werden müssen ...
-
 unsigned long nextExecutionSensor = 0;
+unsigned long lastExecutionWifi = 0;
+unsigned long nextExecutionWifi = 0;
 
 void Sensorsetup()
 {
@@ -37,6 +23,7 @@ void Sensorsetup()
   if (!sensor.init())
   {
     // logger.error("Failed to initialize VL53L0X!");
+    Serial.println("Failed to initialize VL53L0X!");
     if (RESTART_ON_FAIL)
     {
       ESP.restart();
@@ -48,34 +35,32 @@ void Sensorsetup()
   }
 
   sensor.startContinuous(); // Sensor reads continuously in the background
-  Serial.println("Sensor start reading distance");
+  Serial.println("VL53L0X sensor is ready!");
   // logger.info("VL53L0X sensor is ready!");
 
-  // Setup WIFI
   SetupWIFI();
 }
 
 void SetupWIFI()
 {
-  WiFi.begin(ssid, password);
-  Serial.println("Connecting");
+  Serial.println("WiFi Connecting...");
+  WiFi.begin(SSID_NAME, SSID_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
-    // delay(500);
-    Serial.print(".");
+    // We can use a delay here, just trap execution until connected
+    delay(500);
   }
-  Serial.println("");
   Serial.print("Connected to WiFi network with IP Address: ");
   Serial.println(WiFi.localIP());
-
-  Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
 }
 
 void HTTPClientLoop()
 {
   // Send an HTTP POST request every 10 minutes
-  if ((millis() - lastTime) > timerDelay)
+  if ((millis() - lastExecutionWifi) > nextExecutionWifi)
   {
+    nextExecutionWifi += WIFI_DELAY;
+
     // Check WiFi connection status
     if (WiFi.status() == WL_CONNECTED)
     {
@@ -83,25 +68,14 @@ void HTTPClientLoop()
       HTTPClient http;
 
       // Your Domain name with URL path or IP address with path
-      http.begin(client, serverName);
+      http.begin(client, BASE_URL "/update-sensor");
 
       // If you need Node-RED/server authentication, insert user and password below
       // http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
 
-      // Specify content-type header
-      http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-      // Data to send with HTTP POST
-      String httpRequestData = "api_key=tPmAT5Ab3j7F9&sensor=BME280&value1=24.25&value2=49.54&value3=1005.14";
-      // Send HTTP POST request
-      int httpResponseCode = http.POST(httpRequestData);
-
       // If you need an HTTP request with a content type: application/json, use the following:
-      // http.addHeader("Content-Type", "application/json");
-      // int httpResponseCode = http.POST("{\"api_key\":\"tPmAT5Ab3j7F9\",\"sensor\":\"BME280\",\"value1\":\"24.25\",\"value2\":\"49.54\",\"value3\":\"1005.14\"}");
-
-      // If you need an HTTP request with a content type: text/plain
-      // http.addHeader("Content-Type", "text/plain");
-      // int httpResponseCode = http.POST("Hello, World!");
+      http.addHeader("Content-Type", "application/json");
+      int httpResponseCode = http.POST("{\"api_key\":\"tPmAT5Ab3j7F9\",\"sensor\":\"BME280\",\"value1\":\"24.25\",\"value2\":\"49.54\",\"value3\":\"1005.14\"}");
 
       Serial.print("HTTP Response code: ");
       Serial.println(httpResponseCode);
@@ -111,9 +85,14 @@ void HTTPClientLoop()
     }
     else
     {
-      Serial.println("WiFi Disconnected");
+      Serial.println("WiFi was disconnected");
+      if (RECONNECT_ON_DISCONNECT)
+      {
+        SetupWIFI();
+      }
     }
-    lastTime = millis();
+
+    lastExecutionWifi = millis();
   }
 }
 
@@ -127,20 +106,27 @@ void Sensorloop()
 
   distanceInTrashCan = sensor.readRangeContinuousMillimeters(); // Get the most recent reading
 
-  Serial.println("Distance in the trashcan: ");
-
-  if (sensor.timeoutOccurred() || distanceInTrashCan > 1300)
+  if (sensor.timeoutOccurred())
   {
-    Serial.println("Distance out of range");
+    Serial.println("Sensor timeout occurred");
+    return;
+  }
+
+  if (distanceInTrashCan > DISTANCE_CUTOFF)
+  {
+    // Sensor measured far, so trashcan is empty - dont save to batch
+    Serial.println("Sensor distance out of range");
     return;
     // logger.debug("Distance: ", 1300);
   }
   else
   {
+    // TODO: save this to an array or something, then send over WiFi every 10 minutes in batch, clear array afterwards
+    // Send information to Backend/Server ohne Auswertung - dies geschieht im Backend dann;
+    Serial.print("Sensor distance: ");
     Serial.println(distanceInTrashCan);
-    // Send information to Backend/ Server ohne Auswertung - dies geschieht im Backend dann;
     // logger.debug("Distance: ", distance);
   }
 
-  // TODO: Do something with measured distance - send to frontend etc.
+  HTTPClientLoop();
 }
