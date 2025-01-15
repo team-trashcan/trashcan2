@@ -16,6 +16,19 @@ unsigned long nextExecutionSensor = 0;
 unsigned long lastExecutionWifi = 0;
 unsigned long nextExecutionWifi = 0;
 
+void SetupWIFI()
+{
+  Serial.println("WiFi Connecting...");
+  WiFi.begin(SSID_NAME, SSID_PASSWORD);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    // We can use a delay here, just trap execution until connected
+    delay(500);
+  }
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
+}
+
 void Sensorsetup()
 {
   Wire.begin();
@@ -39,19 +52,6 @@ void Sensorsetup()
   // logger.info("VL53L0X sensor is ready!");
 
   SetupWIFI();
-}
-
-void SetupWIFI()
-{
-  Serial.println("WiFi Connecting...");
-  WiFi.begin(SSID_NAME, SSID_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    // We can use a delay here, just trap execution until connected
-    delay(500);
-  }
-  Serial.print("Connected to WiFi network with IP Address: ");
-  Serial.println(WiFi.localIP());
 }
 
 void HTTPClientLoop()
