@@ -32,7 +32,6 @@ void setup()
   // logger.debug("Debug logging is enabled.");
 
   Serial.begin(BAUD_RATE);
-  Serial.println("test");
 
   Servosetup();
   Sensorsetup();

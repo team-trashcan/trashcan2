@@ -28,6 +28,7 @@ void Sensorsetup()
   }
 
   sensor.startContinuous(); // Sensor reads continuously in the background
+  Serial.println("Sensor start reading distance");
 
   // logger.info("VL53L0X sensor is ready!");
 }
@@ -42,8 +43,12 @@ void Sensorloop()
 
   int distance = sensor.readRangeContinuousMillimeters(); // Get the most recent reading
 
+  Serial.println("Distance in the trashcan: ");
+  Serial.println(distance);
+
   if (sensor.timeoutOccurred() || distance > 1300)
   {
+    return;
     // logger.debug("Distance: ", 1300);
   }
   else
