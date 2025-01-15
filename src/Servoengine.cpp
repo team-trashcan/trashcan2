@@ -77,7 +77,6 @@ void Servoloop()
       // servoMotor.attach(SERVO_PIN);
       servoMotor.write(CLOSE_ANGLE);
       // servoMotor.detach(); // Detach the servo to save power when not in use
-
       lidOpen = false;
     }
   }
