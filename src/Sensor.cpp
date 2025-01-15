@@ -16,10 +16,14 @@ unsigned long nextExecutionSensor = 0;
 unsigned long lastExecutionWifi = 0;
 unsigned long nextExecutionWifi = 0;
 
+// Use the SSID defined in platformio.ini
+const char *ssid = SSID_NAME;
+
 void SetupWIFI()
 {
   Serial.println("WiFi Connecting...");
-  WiFi.begin(SSID_NAME, SSID_PASSWORD);
+  Serial.println(ssid);
+  WiFi.begin(ssid, SSID_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
     // We can use a delay here, just trap execution until connected
