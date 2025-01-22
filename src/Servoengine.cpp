@@ -41,12 +41,12 @@ void Servoloop()
   if (millis() >= nextExecutionServo)
   {
     // read measure
-    Serial.println("---servo check---");
+    // Serial.println("---servo check---");
 
     nextExecutionServo = millis() + 1000;
     distance = readDistance();
-    Serial.print("distance: ");
-    Serial.println(distance);
+    // Serial.print("distance: ");
+    // Serial.println(distance);
   }
   else
   {
