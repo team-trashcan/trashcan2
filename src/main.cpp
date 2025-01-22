@@ -23,14 +23,12 @@ void setup()
 
 void loop()
 {
-  // Auf rufen des Servollops
   Servoloop();
 
-  // es wird nur im inneren gemessen wenn der Deckel zu ist
+  // Es wird nur im inneren gemessen wenn der Deckel zu ist
   if (!lidOpen && !functionCalled)
   {
-    Sensorloop();
-    
+    measureInternalDistance();
     functionCalled = true;
   }
   if (lidOpen)

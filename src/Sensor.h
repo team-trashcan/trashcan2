@@ -3,6 +3,6 @@
 
 // Functions that are available for the main
 void Sensorsetup();
-void Sensorloop();
+void measureInternalDistance();
 
 #endif

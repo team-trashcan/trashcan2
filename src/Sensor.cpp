@@ -100,7 +100,7 @@ void SendHTTPPost()
   // }
 }
 
-void Sensorloop()
+void measureInternalDistance()
 {
   if (millis() < nextExecutionSensor)
   {
