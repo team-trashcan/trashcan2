@@ -9,6 +9,8 @@
 
 // Logger logger;
 
+bool functionCalled = false;
+
 void setup()
 {
   // logger.setup(BAUD_RATE);
@@ -25,8 +27,14 @@ void loop()
   Servoloop();
 
   // es wird nur im inneren gemessen wenn der Deckel zu ist
-  if (!lidOpen)
+  if (!lidOpen && !functionCalled)
   {
     Sensorloop();
+    
+    functionCalled = true;
+  }
+  if (lidOpen)
+  {
+    functionCalled = false;
   }
 }

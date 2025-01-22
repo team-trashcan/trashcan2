@@ -58,46 +58,46 @@ void Sensorsetup()
   SetupWIFI();
 }
 
-void HTTPClientLoop()
+void SendHTTPPost()
 {
   // Send an HTTP POST request every 10 minutes
-  if ((millis() - lastExecutionWifi) > nextExecutionWifi)
+  // if ((millis() - lastExecutionWifi) > nextExecutionWifi)
+  // {
+  // nextExecutionWifi += WIFI_DELAY;
+
+  // Check WiFi connection status
+  if (WiFi.status() == WL_CONNECTED)
   {
-    nextExecutionWifi += WIFI_DELAY;
+    WiFiClient client;
+    HTTPClient http;
 
-    // Check WiFi connection status
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      WiFiClient client;
-      HTTPClient http;
+    // Your Domain name with URL path or IP address with path
+    http.begin(client, BASE_URL "/update-sensor");
 
-      // Your Domain name with URL path or IP address with path
-      http.begin(client, BASE_URL "/update-sensor");
+    // If you need Node-RED/server authentication, insert user and password below
+    // http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
 
-      // If you need Node-RED/server authentication, insert user and password below
-      // http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
+    // If you need an HTTP request with a content type: application/json, use the following:
+    http.addHeader("Content-Type", "application/json");
+    int httpResponseCode = http.POST("{\"name\":\"1\",\"data\":{\"distance\":\"" + String(distanceInTrashCan) + "\"}}");
 
-      // If you need an HTTP request with a content type: application/json, use the following:
-      http.addHeader("Content-Type", "application/json");
-      int httpResponseCode = http.POST("{\"api_key\":\"tPmAT5Ab3j7F9\",\"sensor\":\"BME280\",\"value1\":\"24.25\",\"value2\":\"49.54\",\"value3\":\"1005.14\"}");
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
 
-      Serial.print("HTTP Response code: ");
-      Serial.println(httpResponseCode);
-
-      // Free resources
-      http.end();
-    }
-    else
-    {
-      Serial.println("WiFi was disconnected");
-      if (RECONNECT_ON_DISCONNECT)
-      {
-        SetupWIFI();
-      }
-    }
-
-    lastExecutionWifi = millis();
+    // Free resources
+    http.end();
   }
+  else
+  {
+    Serial.println("WiFi was disconnected");
+    if (RECONNECT_ON_DISCONNECT)
+    {
+      SetupWIFI();
+    }
+  }
+
+  // lastExecutionWifi = millis();
+  // }
 }
 
 void Sensorloop()
@@ -132,5 +132,5 @@ void Sensorloop()
     // logger.debug("Distance: ", distance);
   }
 
-  HTTPClientLoop();
+  void SendHTTPPost();
 }
