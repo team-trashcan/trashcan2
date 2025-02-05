@@ -60,19 +60,15 @@ void Sensorsetup()
 
 void SendHTTPPost()
 {
-  // Send an HTTP POST request every 10 minutes
-  // if ((millis() - lastExecutionWifi) > nextExecutionWifi)
-  // {
-  // nextExecutionWifi += WIFI_DELAY;
-
   // Check WiFi connection status
   if (WiFi.status() == WL_CONNECTED)
   {
     WiFiClient client;
     HTTPClient http;
 
+    Serial.println("Sending HTTP POST request...");
     // Your Domain name with URL path or IP address with path
-    http.begin(client, BASE_URL "/update-sensor");
+    http.begin(client, BASE_URL "/trashcan-fill-height");
 
     // If you need Node-RED/server authentication, insert user and password below
     // http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
@@ -95,19 +91,10 @@ void SendHTTPPost()
       SetupWIFI();
     }
   }
-
-  // lastExecutionWifi = millis();
-  // }
 }
 
 void measureInternalDistance()
 {
-  if (millis() < nextExecutionSensor)
-  {
-    return;
-  }
-  nextExecutionSensor = millis() + SENSOR_MEASUREMENT_DELAY;
-
   distanceInTrashCan = sensor.readRangeContinuousMillimeters(); // Get the most recent reading
 
   if (sensor.timeoutOccurred())
@@ -130,7 +117,6 @@ void measureInternalDistance()
     Serial.print("Sensor distance: ");
     Serial.println(distanceInTrashCan);
     // logger.debug("Distance: ", distance);
+    SendHTTPPost();
   }
-
-  void SendHTTPPost();
 }
