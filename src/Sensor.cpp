@@ -51,7 +51,7 @@ void Sensorsetup()
     }
   }
 
-  sensor.startContinuous(); // Sensor reads continuously in the background
+  // sensor.startContinuous(); // Sensor reads continuously in the background
   Serial.println("VL53L0X sensor is ready!");
   // logger.info("VL53L0X sensor is ready!");
 
@@ -95,7 +95,7 @@ void SendHTTPPost()
 
 void measureInternalDistance()
 {
-  distanceInTrashCan = sensor.readRangeContinuousMillimeters(); // Get the most recent reading
+  distanceInTrashCan = sensor.readRangeSingleMillimeters(); // Get the most recent reading
 
   if (sensor.timeoutOccurred())
   {

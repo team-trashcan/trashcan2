@@ -17,7 +17,7 @@
 #define DISTANCE_THRESHOLD 20         // Distance of detected object for the lid to open, in centimeters
 #define OPEN_ANGLE 135                // Lid opened angle, in degree
 #define CLOSE_ANGLE 0                 // Lid closed angle, in degree
-#define LID_HOLD_OPEN_DELAY 3000      // Delay in milliseconds before lid sensor measures again after opening
+#define LID_HOLD_OPEN_DELAY 10000      // Delay in milliseconds before lid sensor measures again after opening
 #define DISTANCE_CUTOFF 1300          // Maximal distance the sensor is allowed to measure (1300 is hard max)
 
 #define BASE_URL "http://api.wurstkatze.eu/v1" // The base URL where the trashcan sends their data to
