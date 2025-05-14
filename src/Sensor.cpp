@@ -105,14 +105,13 @@ void measureInternalDistance()
 
   if (distanceInTrashCan > DISTANCE_CUTOFF)
   {
-    // Sensor measured far, so trashcan is empty - dont save to batch
+    // Sensor measured far, so trashcan is empty - don't save to batch
     Serial.println("Sensor distance out of range");
     return;
     // logger.debug("Distance: ", 1300);
   }
   else
   {
-    // TODO: save this to an array or something, then send over WiFi every 10 minutes in batch, clear array afterwards
     // Send information to Backend/Server ohne Auswertung - dies geschieht im Backend dann;
     Serial.print("Sensor distance: ");
     Serial.println(distanceInTrashCan);
