@@ -75,7 +75,7 @@ void SendHTTPPost()
 
     // If you need an HTTP request with a content type: application/json, use the following:
     http.addHeader("Content-Type", "application/json");
-    int httpResponseCode = http.POST("{\"name\":\"1\",\"data\":{\"distance\":\"" + String(distanceInTrashCan) + "\"}}");
+    int httpResponseCode = http.POST("{\"name\":\"Prototype\",\"data\": " + String(distanceInTrashCan) + "}");
 
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);
