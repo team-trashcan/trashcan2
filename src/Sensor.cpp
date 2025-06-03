@@ -63,18 +63,20 @@ void SendHTTPPost()
   // Check WiFi connection status
   if (WiFi.status() == WL_CONNECTED)
   {
-    WiFiClient client;
-    HTTPClient http;
+    WiFiClientSecure client;
+    client.setInsecure(); // We would have to manually handle certs otherwise, we simply trust for now
+
+    HTTPClient https;
 
     Serial.println("Sending HTTP POST request...");
     // Your Domain name with URL path or IP address with path
-    http.begin(client, BASE_URL "/trashcan-fill-height");
+    https.begin(client, BASE_URL "/trashcan-fill-height");
 
     // If you need Node-RED/server authentication, insert user and password below
     // http.setAuthorization("REPLACE_WITH_SERVER_USERNAME", "REPLACE_WITH_SERVER_PASSWORD");
 
     // If you need an HTTP request with a content type: application/json, use the following:
-    http.addHeader("Content-Type", "application/json");
+    https.addHeader("Content-Type", "application/json");
     int httpResponseCode = http.POST("{\"name\":\"Prototype\",\"data\": " + String(distanceInTrashCan) + "}");
 
     Serial.print("HTTP Response code: ");
